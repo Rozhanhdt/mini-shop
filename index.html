@@ -4,93 +4,166 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>فروشگاه ما</title>
+  <!-- اضافه کردن فونت وزیرمتن برای زیبایی بیشتر -->
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
   <style>
     * { box-sizing: border-box; }
+    
     body {
       margin: 0;
-      font-family: Tahoma, Arial, sans-serif;
+      /* استفاده از فونت B Nazanin و در صورت نبود، وزیرمتن */
+      font-family: "B Nazanin", "Vazirmatn", Tahoma, Arial, sans-serif;
       background: #f2f5fa;
       color: #17243a;
-    }
-    main {
-      max-width: 640px;
-      margin: 0 auto;
+      /* برای وسط چین شدن کادر خوشامدگویی */
+      display: flex;
+      flex-direction: column;
       min-height: 100vh;
-      padding: 28px 16px;
     }
-    .screen { display: none; }
+
+    /* کانتینر اصلی که کل صفحه را می‌گیرد */
+    main {
+      width: 100%;
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen { display: none; width: 100%; }
     .screen.active { display: block; }
+
+    /* --- تنظیمات کادر خوشامدگویی --- */
+    #welcome.screen.active {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1; /* پر کردن کل ارتفاع */
+    }
+
     .welcome {
       background: #fff;
       border-radius: 18px;
       padding: 48px 24px;
       text-align: center;
       box-shadow: 0 8px 24px #132c4a12;
-      margin-top: 12vh;
+      width: 100%;
+      max-width: 500px; /* حداکثر عرض کادر */
     }
+    
     .welcome h1 {
       margin: 0 0 28px;
       font-size: 26px;
       line-height: 1.7;
     }
+
     button {
       font-family: inherit;
       border: 0;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
+
+    /* --- دکمه مشاهده محصولات (قرمز و هاور سبز) --- */
     .primary {
-      background: #1767a8;
+      background: #dc3545; /* قرمز */
       color: #fff;
       padding: 12px 22px;
       border-radius: 10px;
       font-size: 16px;
       font-weight: bold;
     }
+    
+    .primary:hover {
+      background: #28a745; /* سبز */
+    }
+
+    /* --- لیست محصولات تمام صفحه --- */
     .product-list {
       background: #fff;
       border-radius: 18px;
       padding: 8px 18px 18px;
       box-shadow: 0 8px 24px #132c4a12;
+      width: 100%; /* تمام عرض */
     }
+
     .product {
       padding: 18px 0;
       border-bottom: 1px solid #e8edf4;
+      display: flex;
+      align-items: center;
+      gap: 20px; /* فاصله بین عکس و متن */
     }
     .product:last-of-type { border-bottom: 0; }
+
+    /* --- استایل عکس محصول --- */
+    .product-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+      background-color: #eee;
+      flex-shrink: 0;
+    }
+
+    .product-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
     }
-    .name { font-size: 17px; font-weight: bold; }
+    
+    .name { font-size: 18px; font-weight: bold; }
+    
+    /* --- قیمت (قرمز پررنگ) --- */
     .price {
-      color: #1767a8;
-      font-size: 15px;
-      direction: ltr;
-      unicode-bidi: isolate;
+      color: #b30000; /* قرمز پررنگ */
+      font-size: 16px;
+      font-weight: bold;
+      direction: rtl; /* راست چین برای کلمه تومان */
     }
+
     .actions {
-      margin-top: 12px;
       display: flex;
       justify-content: flex-end;
       align-items: center;
       gap: 10px;
     }
+
     .qty-box {
       display: none;
       align-items: center;
       gap: 8px;
     }
     .qty-box.show { display: flex; }
+    
+    /* --- دکمه افزودن به سبد (صورتی) --- */
+    .add-btn { 
+      display: none; 
+      background: #e83e8c; /* صورتی */
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+    }
     .add-btn.show { display: inline-block; }
-    .add-btn { display: none; }
+    .add-btn:hover { background: #c8236e; } /* صورتی تیره‌تر در هاور */
+
     .count {
       min-width: 28px;
       text-align: center;
       font-size: 18px;
       font-weight: bold;
     }
+    
     .arrow {
       width: 34px;
       height: 28px;
@@ -100,17 +173,34 @@
       font-size: 14px;
       line-height: 1;
     }
+    .arrow:hover { background: #d0e0f5; }
+
+    /* --- بخش پرداخت --- */
     .total-box {
       margin-top: 8px;
       padding-top: 16px;
       border-top: 2px solid #d7e0ec;
       font-size: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+    
     .total-box strong {
-      color: #1767a8;
-      direction: ltr;
-      unicode-bidi: isolate;
+      color: #b30000; /* قرمز پررنگ */
+      direction: rtl;
     }
+
+    /* --- دکمه پرداخت (قرمز) --- */
+    .pay-btn {
+      background: #dc3545;
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .pay-btn:hover { background: #a71d2a; }
   </style>
 </head>
 <body>
@@ -128,12 +218,13 @@
   </main>
 
   <script>
+    // برای اضافه کردن عکس، لینک عکس خود را جایگزین لینک زیر کنید
     const products = [
-      { id: 1, name: "دفترچه یادداشت", price: 500000 },
-      { id: 2, name: "ماژیک هایلایتر", price: 300000 },
-      { id: 3, name: "مداد", price: 50000 },
-      { id: 4, name: "خودکار", price: 115000 },
-      { id: 5, name: "پاک کن", price: 35000 }
+      { id: 1, name: "دفترچه یادداشت", price: 500000, image: "https://via.placeholder.com/80/ccc/fff?text=عکس" },
+      { id: 2, name: "ماژیک هایلایتر", price: 300000, image: "https://via.placeholder.com/80/ccc/fff?text=عکس" },
+      { id: 3, name: "مداد", price: 50000, image: "https://via.placeholder.com/80/ccc/fff?text=عکس" },
+      { id: 4, name: "خودکار", price: 115000, image: "https://via.placeholder.com/80/ccc/fff?text=عکس" },
+      { id: 5, name: "پاک کن", price: 35000, image: "https://via.placeholder.com/80/ccc/fff?text=عکس" }
     ];
 
     const cart = {};
@@ -144,31 +235,41 @@
 
     function render() {
       const list = document.getElementById("productList");
+      
+      // تولید لیست محصولات با عکس
       list.innerHTML = products.map((p) => {
         const qty = cart[p.id] || 0;
         const inCart = qty > 0;
         return `
           <article class="product">
-            <div class="row">
-              <span class="name">${p.name}</span>
-              <span class="price">${money(p.price)}</span>
-            </div>
-            <div class="actions">
-              <button class="primary add-btn ${inCart ? "" : "show"}" type="button" data-add="${p.id}">
-                افزودن به سبد خرید
-              </button>
-              <div class="qty-box ${inCart ? "show" : ""}">
-                <span class="count">${qty}</span>
-                <button class="arrow" type="button" data-up="${p.id}" aria-label="افزایش">▲</button>
-                <button class="arrow" type="button" data-down="${p.id}" aria-label="کاهش">▼</button>
+            <!-- اضافه کردن عکس محصول -->
+            <img src="${p.image}" alt="${p.name}" class="product-image" />
+            
+            <div class="product-info">
+              <div class="row">
+                <span class="name">${p.name}</span>
+                <!-- اضافه کردن کلمه تومان -->
+                <span class="price">${money(p.price)} تومان</span>
+              </div>
+              <div class="actions">
+                <button class="add-btn ${inCart ? "" : "show"}" type="button" data-add="${p.id}">
+                  افزودن به سبد خرید
+                </button>
+                <div class="qty-box ${inCart ? "show" : ""}">
+                  <span class="count">${qty}</span>
+                  <button class="arrow" type="button" data-up="${p.id}" aria-label="افزایش">▲</button>
+                  <button class="arrow" type="button" data-down="${p.id}" aria-label="کاهش">▼</button>
+                </div>
               </div>
             </div>
           </article>
         `;
       }).join("") + `
-        <p class="total-box">
-          مبلغ پرداختی شما (${money(total())})
-        </p>
+        <!-- بخش کل مبلغ و دکمه پرداخت -->
+        <div class="total-box">
+          <span>مبلغ پرداختی شما: <strong>${money(total())} تومان</strong></span>
+          <button class="pay-btn" type="button" onclick="alert('به درگاه پرداخت متصل نشده است!')">پرداخت</button>
+        </div>
       `;
     }
 
