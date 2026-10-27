@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>فروشگاه ما</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f2f5fa;
+      color: #17243a;
+    }
+    main {
+      max-width: 640px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 28px 16px;
+    }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .welcome {
+      background: #fff;
+      border-radius: 18px;
+      padding: 48px 24px;
+      text-align: center;
+      box-shadow: 0 8px 24px #132c4a12;
+      margin-top: 12vh;
+    }
+    .welcome h1 {
+      margin: 0 0 28px;
+      font-size: 26px;
+      line-height: 1.7;
+    }
+    button {
+      font-family: inherit;
+      border: 0;
+      cursor: pointer;
+    }
+    .primary {
+      background: #1767a8;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .product-list {
+      background: #fff;
+      border-radius: 18px;
+      padding: 8px 18px 18px;
+      box-shadow: 0 8px 24px #132c4a12;
+    }
+    .product {
+      padding: 18px 0;
+      border-bottom: 1px solid #e8edf4;
+    }
+    .product:last-of-type { border-bottom: 0; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .name { font-size: 17px; font-weight: bold; }
+    .price {
+      color: #1767a8;
+      font-size: 15px;
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+    }
+    .qty-box {
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .qty-box.show { display: flex; }
+    .add-btn.show { display: inline-block; }
+    .add-btn { display: none; }
+    .count {
+      min-width: 28px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .arrow {
+      width: 34px;
+      height: 28px;
+      border-radius: 8px;
+      background: #eaf1fb;
+      color: #174b7c;
+      font-size: 14px;
+      line-height: 1;
+    }
+    .total-box {
+      margin-top: 8px;
+      padding-top: 16px;
+      border-top: 2px solid #d7e0ec;
+      font-size: 18px;
+    }
+    .total-box strong {
+      color: #1767a8;
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section id="welcome" class="screen active">
+      <div class="welcome">
+        <h1>به فروشگاه ما خوش آمدید</h1>
+        <button class="primary" type="button" id="showProducts">مشاهده محصولات</button>
+      </div>
+    </section>
+
+    <section id="shop" class="screen">
+      <div class="product-list" id="productList"></div>
+    </section>
+  </main>
+
+  <script>
+    const products = [
+      { id: 1, name: "دفترچه یادداشت", price: 500000 },
+      { id: 2, name: "ماژیک هایلایتر", price: 300000 },
+      { id: 3, name: "مداد", price: 50000 },
+      { id: 4, name: "خودکار", price: 115000 },
+      { id: 5, name: "پاک کن", price: 35000 }
+    ];
+
+    const cart = {};
+
+    function money(n) {
+      return n.toLocaleString("fa-IR");
+    }
+
+    function render() {
+      const list = document.getElementById("productList");
+      list.innerHTML = products.map((p) => {
+        const qty = cart[p.id] || 0;
+        const inCart = qty > 0;
+        return `
+          <article class="product">
+            <div class="row">
+              <span class="name">${p.name}</span>
+              <span class="price">${money(p.price)}</span>
+            </div>
+            <div class="actions">
+              <button class="primary add-btn ${inCart ? "" : "show"}" type="button" data-add="${p.id}">
+                افزودن به سبد خرید
+              </button>
+              <div class="qty-box ${inCart ? "show" : ""}">
+                <span class="count">${qty}</span>
+                <button class="arrow" type="button" data-up="${p.id}" aria-label="افزایش">▲</button>
+                <button class="arrow" type="button" data-down="${p.id}" aria-label="کاهش">▼</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("") + `
+        <p class="total-box">
+          مبلغ پرداختی شما (${money(total())})
+        </p>
+      `;
+    }
+
+    function total() {
+      return products.reduce((sum, p) => sum + p.price * (cart[p.id] || 0), 0);
+    }
+
+    document.getElementById("showProducts").addEventListener("click", () => {
+      document.getElementById("welcome").classList.remove("active");
+      document.getElementById("shop").classList.add("active");
+      render();
+    });
+
+    document.getElementById("productList").addEventListener("click", (e) => {
+      const add = e.target.closest("[data-add]");
+      const up = e.target.closest("[data-up]");
+      const down = e.target.closest("[data-down]");
+
+      if (add) cart[Number(add.dataset.add)] = 1;
+      if (up) {
+        const id = Number(up.dataset.up);
+        cart[id] = (cart[id] || 0) + 1;
+      }
+      if (down) {
+        const id = Number(down.dataset.down);
+        cart[id] = Math.max(0, (cart[id] || 0) - 1);
+      }
+
+      if (add || up || down) render();
+    });
+  </script>
+</body>
+</html>
